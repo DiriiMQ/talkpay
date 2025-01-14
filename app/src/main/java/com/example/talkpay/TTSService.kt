@@ -7,7 +7,9 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
@@ -19,6 +21,7 @@ class TTSService : Service(), TextToSpeech.OnInitListener {
     private val channelId = "TTS_CHANNEL"
     private val pendingMessages: Queue<String> = LinkedList()
     private var isInitialized = false
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate() {
         super.onCreate()
@@ -31,7 +34,7 @@ class TTSService : Service(), TextToSpeech.OnInitListener {
 
             override fun onDone(utteranceId: String?) {
                 Log.d("TTSService", "onDone: $utteranceId")
-                processPendingMessages()
+                handler.postDelayed({ processPendingMessages() }, 1000) // 1 second delay
             }
 
             override fun onError(utteranceId: String?) {
